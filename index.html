@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="it">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>IPS Utility Prototype</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="page">
+      <section class="hero">
+        <p class="eyebrow">Scopus-only prototype</p>
+        <h1>IPS Utility</h1>
+        <p class="subtitle">
+          Genera la tabella IPS standard o la tabella dettagliata partendo da un autore Scopus.
+        </p>
+        <p id="config-meta" class="config-meta"></p>
+      </section>
+
+      <section class="panel">
+        <div class="grid">
+          <label>
+            <span>Backend URL</span>
+            <input id="backend-url" type="url" value="http://127.0.0.1:8000" />
+          </label>
+          <label class="wide">
+            <span>Ricerca autore Scopus</span>
+            <input id="author-query" type="text" value="authlast(Bosi) and authfirst(Emanuele)" />
+          </label>
+          <label>
+            <span>Author ID Scopus</span>
+            <input id="author-id" type="text" value="50060939700" />
+          </label>
+          <label>
+            <span>Nome ricercatore</span>
+            <input id="researcher-name" type="text" value="EMANUELE BOSI" />
+          </label>
+          <label>
+            <span>SSD</span>
+            <input id="ssd" type="text" value="BIO/18" />
+          </label>
+          <label>
+            <span>Anno iniziale</span>
+            <input id="start-year" type="number" value="2022" />
+          </label>
+          <label>
+            <span>Anno finale</span>
+            <input id="end-year" type="number" value="2026" />
+          </label>
+        </div>
+
+        <div class="actions">
+          <button id="search-author">Cerca Autore</button>
+          <button id="load-ips" class="primary">Genera Tabella IPS</button>
+          <button id="load-detailed">Genera Tabella Dettagliata</button>
+          <label class="upload-button">
+            <input id="user-csv" type="file" accept=".csv,text/csv" />
+            Carica CSV Utente
+          </label>
+          <button id="compare-user-table">Confronta Tabella Utente</button>
+          <button id="download-csv" disabled>Scarica CSV</button>
+        </div>
+
+        <p id="status" class="status">Pronto.</p>
+        <div id="author-results" class="author-results empty">
+          <p>Nessuna ricerca autore eseguita.</p>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="results-header">
+          <div>
+            <p class="section-label">Anteprima</p>
+            <h2 id="results-title">Nessun dato caricato</h2>
+          </div>
+          <p id="results-meta" class="meta"></p>
+        </div>
+
+        <div id="table-wrap" class="table-wrap empty">
+          <p>Nessun risultato.</p>
+        </div>
+      </section>
+    </main>
+
+    <script src="./config.js"></script>
+    <script type="module" src="./main.js"></script>
+  </body>
+</html>
