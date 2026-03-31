@@ -14,38 +14,72 @@
         <p class="subtitle">
           Genera la tabella IPS standard o la tabella dettagliata partendo da un autore Scopus.
         </p>
+        <p class="hero-note">
+          Compila i campi obbligatori, cerca il profilo autore e poi genera la tabella.
+        </p>
         <p id="config-meta" class="config-meta"></p>
       </section>
 
       <section class="panel">
+        <div class="panel-header">
+          <div>
+            <p class="section-label">Dati</p>
+            <h2>Compilazione guidata</h2>
+          </div>
+          <button id="fill-example" type="button" class="ghost-button">Carica Esempio</button>
+        </div>
+
+        <p class="required-note"><span>*</span> campi obbligatori</p>
+
         <div class="grid">
           <label>
-            <span>Backend URL</span>
-            <input id="backend-url" type="url" value="http://127.0.0.1:8000" />
-          </label>
-          <label class="wide">
-            <span>Ricerca autore Scopus</span>
-            <input id="author-query" type="text" value="authlast(Bosi) and authfirst(Emanuele)" />
-          </label>
-          <label>
-            <span>Author ID Scopus</span>
-            <input id="author-id" type="text" value="50060939700" />
+            <span class="field-label">
+              <span>Nome *</span>
+              <button class="info-button" type="button" data-help="Inserisci il nome del ricercatore da cercare su Scopus.">i</button>
+            </span>
+            <input id="author-first-name" type="text" placeholder="Esempio: Emanuele" />
           </label>
           <label>
-            <span>Nome ricercatore</span>
-            <input id="researcher-name" type="text" value="EMANUELE BOSI" />
+            <span class="field-label">
+              <span>Cognome *</span>
+              <button class="info-button" type="button" data-help="Inserisci il cognome del ricercatore da cercare su Scopus.">i</button>
+            </span>
+            <input id="author-last-name" type="text" placeholder="Esempio: Bosi" />
           </label>
           <label>
-            <span>SSD</span>
-            <input id="ssd" type="text" value="BIO/18" />
+            <span class="field-label">
+              <span>Author ID Scopus *</span>
+              <button class="info-button" type="button" data-help="Dopo la ricerca autore, clicca su 'Usa Questo Autore'. Il sistema compila qui l'Author ID corretto.">i</button>
+            </span>
+            <input id="author-id" type="text" placeholder="Seleziona un autore dai risultati" />
           </label>
           <label>
-            <span>Anno iniziale</span>
-            <input id="start-year" type="number" value="2022" />
+            <span class="field-label">
+              <span>Nome ricercatore *</span>
+              <button class="info-button" type="button" data-help="Nome che comparirà nella tabella finale. Puoi compilarlo a mano o farlo riempire dalla ricerca autore.">i</button>
+            </span>
+            <input id="researcher-name" type="text" placeholder="Esempio: EMANUELE BOSI" />
           </label>
           <label>
-            <span>Anno finale</span>
-            <input id="end-year" type="number" value="2026" />
+            <span class="field-label">
+              <span>SSD *</span>
+              <button class="info-button" type="button" data-help="Inserisci il tuo settore scientifico-disciplinare, per esempio BIO/18.">i</button>
+            </span>
+            <input id="ssd" type="text" placeholder="Esempio: BIO/18" />
+          </label>
+          <label>
+            <span class="field-label">
+              <span>Anno iniziale *</span>
+              <button class="info-button" type="button" data-help="Primo anno da includere nella ricerca pubblicazioni.">i</button>
+            </span>
+            <input id="start-year" type="number" placeholder="2022" />
+          </label>
+          <label>
+            <span class="field-label">
+              <span>Anno finale *</span>
+              <button class="info-button" type="button" data-help="Ultimo anno da includere nella ricerca pubblicazioni.">i</button>
+            </span>
+            <input id="end-year" type="number" placeholder="2026" />
           </label>
         </div>
 
@@ -65,6 +99,7 @@
         <div id="author-results" class="author-results empty">
           <p>Nessuna ricerca autore eseguita.</p>
         </div>
+        <div id="help-popover" class="help-popover" hidden></div>
       </section>
 
       <section class="panel">

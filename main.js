@@ -9,15 +9,25 @@ const state = {
 
 const config = window.IPS_CONFIG || {};
 const defaultBackendUrl = config.backendUrl || "http://127.0.0.1:8000";
+const EXAMPLE_VALUES = {
+  authorFirstName: "Emanuele",
+  authorLastName: "Bosi",
+  authorId: "50060939700",
+  researcherName: "EMANUELE BOSI",
+  ssd: "BIO/18",
+  startYear: "2022",
+  endYear: "2026",
+};
 
 const ids = {
-  backendUrl: document.querySelector("#backend-url"),
-  authorQuery: document.querySelector("#author-query"),
+  authorFirstName: document.querySelector("#author-first-name"),
+  authorLastName: document.querySelector("#author-last-name"),
   authorId: document.querySelector("#author-id"),
   researcherName: document.querySelector("#researcher-name"),
   ssd: document.querySelector("#ssd"),
   startYear: document.querySelector("#start-year"),
   endYear: document.querySelector("#end-year"),
+  fillExample: document.querySelector("#fill-example"),
   searchAuthor: document.querySelector("#search-author"),
   loadIps: document.querySelector("#load-ips"),
   loadDetailed: document.querySelector("#load-detailed"),
@@ -30,17 +40,29 @@ const ids = {
   resultsTitle: document.querySelector("#results-title"),
   resultsMeta: document.querySelector("#results-meta"),
   tableWrap: document.querySelector("#table-wrap"),
+  helpPopover: document.querySelector("#help-popover"),
+  infoButtons: [...document.querySelectorAll(".info-button")],
 };
 
-ids.backendUrl.value = defaultBackendUrl;
-ids.configMeta.textContent = `Backend predefinito: ${defaultBackendUrl}`;
+ids.configMeta.textContent = "Backend configurato e pronto.";
+ids.startYear.value = "2022";
+ids.endYear.value = "2026";
 
+ids.fillExample.addEventListener("click", fillExampleValues);
 ids.searchAuthor.addEventListener("click", searchAuthor);
 ids.loadIps.addEventListener("click", () => loadTable("ips"));
 ids.loadDetailed.addEventListener("click", () => loadTable("detailed"));
 ids.userCsv.addEventListener("change", loadUserCsv);
 ids.compareUserTable.addEventListener("click", compareUserTable);
 ids.downloadCsv.addEventListener("click", downloadCsv);
+ids.infoButtons.forEach((button) => {
+  button.addEventListener("click", (event) => toggleHelp(event.currentTarget));
+});
+document.addEventListener("click", (event) => {
+  if (event.target instanceof Element && !event.target.closest(".info-button") && !event.target.closest("#help-popover")) {
+    hideHelp();
+  }
+});
 
 function params() {
   const query = new URLSearchParams({
@@ -54,10 +76,16 @@ function params() {
 }
 
 async function loadTable(kind) {
+  const validationError = validateGenerationFields();
+  if (validationError) {
+    setStatus(validationError, true);
+    return;
+  }
+
   setStatus("Caricamento in corso...");
   ids.downloadCsv.disabled = true;
 
-  const base = ids.backendUrl.value.trim().replace(/\/$/, "");
+  const base = defaultBackendUrl.replace(/\/$/, "");
   const endpoint = kind === "ips" ? "/api/scopus/ips-table" : "/api/scopus/detailed-table";
   const url = `${base}${endpoint}?${params().toString()}`;
 
@@ -106,7 +134,7 @@ async function ensureComparisonData() {
 }
 
 async function fetchRows(endpoint) {
-  const base = ids.backendUrl.value.trim().replace(/\/$/, "");
+  const base = defaultBackendUrl.replace(/\/$/, "");
   const url = `${base}${endpoint}?${params().toString()}`;
   const response = await fetch(url);
   const data = await response.json();
@@ -120,10 +148,17 @@ async function fetchRows(endpoint) {
 }
 
 async function searchAuthor() {
+  const firstName = ids.authorFirstName.value.trim();
+  const lastName = ids.authorLastName.value.trim();
+  if (!firstName || !lastName) {
+    setStatus("Inserisci nome e cognome per cercare l'autore.", true);
+    return;
+  }
+
   setStatus("Ricerca autore in corso...");
-  const base = ids.backendUrl.value.trim().replace(/\/$/, "");
+  const base = defaultBackendUrl.replace(/\/$/, "");
   const query = new URLSearchParams({
-    query: ids.authorQuery.value.trim(),
+    query: `authlast(${lastName}) and authfirst(${firstName})`,
     count: "10",
   });
   const url = `${base}/api/scopus/author-search?${query.toString()}`;
@@ -143,7 +178,7 @@ async function searchAuthor() {
     console.error(error);
     ids.authorResults.className = "author-results empty";
     ids.authorResults.innerHTML = "<p>Ricerca autore fallita.</p>";
-    setStatus(error.message, true);
+    setStatus("Ricerca autore non riuscita. Controlla nome e cognome o riprova tra poco.", true);
   }
 }
 
@@ -275,6 +310,51 @@ function renderAuthorResults(rows) {
       setStatus(`Autore selezionato: ${button.dataset.authorId}`);
     });
   });
+}
+
+function fillExampleValues() {
+  ids.authorFirstName.value = EXAMPLE_VALUES.authorFirstName;
+  ids.authorLastName.value = EXAMPLE_VALUES.authorLastName;
+  ids.authorId.value = EXAMPLE_VALUES.authorId;
+  ids.researcherName.value = EXAMPLE_VALUES.researcherName;
+  ids.ssd.value = EXAMPLE_VALUES.ssd;
+  ids.startYear.value = EXAMPLE_VALUES.startYear;
+  ids.endYear.value = EXAMPLE_VALUES.endYear;
+  setStatus("Esempio caricato. Puoi modificarlo liberamente.");
+}
+
+function validateGenerationFields() {
+  if (!ids.authorId.value.trim()) {
+    return "Seleziona prima un autore oppure inserisci un Author ID Scopus valido.";
+  }
+  if (!ids.researcherName.value.trim()) {
+    return "Compila il campo 'Nome ricercatore'.";
+  }
+  if (!ids.ssd.value.trim()) {
+    return "Compila il campo 'SSD'.";
+  }
+  if (!ids.startYear.value.trim() || !ids.endYear.value.trim()) {
+    return "Compila anno iniziale e anno finale.";
+  }
+  return "";
+}
+
+function toggleHelp(button) {
+  const helpText = button.dataset.help || "";
+  if (!helpText) {
+    hideHelp();
+    return;
+  }
+
+  const rect = button.getBoundingClientRect();
+  ids.helpPopover.textContent = helpText;
+  ids.helpPopover.hidden = false;
+  ids.helpPopover.style.top = `${rect.bottom + window.scrollY + 8}px`;
+  ids.helpPopover.style.left = `${Math.max(16, rect.left + window.scrollX - 120)}px`;
+}
+
+function hideHelp() {
+  ids.helpPopover.hidden = true;
 }
 
 function parseCsv(text) {

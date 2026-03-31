@@ -62,6 +62,12 @@ h1 {
   color: var(--muted);
 }
 
+.hero-note {
+  margin: 14px 0 0;
+  color: var(--text);
+  font-size: 0.98rem;
+}
+
 .config-meta {
   margin: 10px 0 0;
   color: var(--muted);
@@ -76,6 +82,14 @@ h1 {
   background: var(--panel);
   box-shadow: var(--shadow);
   backdrop-filter: blur(10px);
+}
+
+.panel-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: start;
+  margin-bottom: 10px;
 }
 
 .grid {
@@ -98,6 +112,24 @@ label span {
   color: var(--muted);
 }
 
+.field-label {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.required-note {
+  margin: 0 0 14px;
+  color: var(--muted);
+  font-size: 0.88rem;
+}
+
+.required-note span {
+  color: var(--danger);
+  font-weight: 700;
+}
+
 input {
   width: 100%;
   padding: 11px 12px;
@@ -111,6 +143,10 @@ input {
 input:focus {
   outline: 2px solid rgba(31, 111, 95, 0.18);
   border-color: var(--accent);
+}
+
+input::placeholder {
+  color: #8a948f;
 }
 
 .actions {
@@ -158,6 +194,26 @@ button.primary {
   color: white;
 }
 
+.ghost-button {
+  background: #f1ece2;
+  color: var(--muted);
+}
+
+.info-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border-radius: 999px;
+  border-color: #c9bcaa;
+  color: var(--accent);
+  background: #f6efe4;
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
 button:disabled {
   cursor: not-allowed;
   opacity: 0.5;
@@ -172,6 +228,20 @@ button:disabled {
 
 .status.error {
   color: var(--danger);
+}
+
+.help-popover {
+  position: fixed;
+  z-index: 20;
+  max-width: 280px;
+  padding: 12px 14px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: #fffdfa;
+  box-shadow: var(--shadow);
+  color: var(--text);
+  font-size: 0.9rem;
+  line-height: 1.4;
 }
 
 .results-header {
@@ -268,6 +338,11 @@ tbody tr:nth-child(2n) {
   }
 
   .results-header {
+    flex-direction: column;
+    align-items: start;
+  }
+
+  .panel-header {
     flex-direction: column;
     align-items: start;
   }
