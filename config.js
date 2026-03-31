@@ -1,3 +1,3 @@
 window.IPS_CONFIG = {
-  backendUrl: "https://your-backend.example.org",
+  backendUrl: "https://ips-backend-wljw.onrender.com",
 };
