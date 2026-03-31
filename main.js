@@ -5,6 +5,7 @@ const state = {
   generatedIpsRows: [],
   generatedDetailedRows: [],
   uploadedUserRows: [],
+  selectedAuthor: null,
 };
 
 const config = window.IPS_CONFIG || {};
@@ -13,7 +14,6 @@ const EXAMPLE_VALUES = {
   authorFirstName: "Emanuele",
   authorLastName: "Bosi",
   authorId: "50060939700",
-  researcherName: "EMANUELE BOSI",
   ssd: "BIO/18",
   startYear: "2022",
   endYear: "2026",
@@ -36,6 +36,7 @@ const ids = {
   downloadCsv: document.querySelector("#download-csv"),
   status: document.querySelector("#status"),
   authorResults: document.querySelector("#author-results"),
+  selectedAuthor: document.querySelector("#selected-author"),
   configMeta: document.querySelector("#config-meta"),
   resultsTitle: document.querySelector("#results-title"),
   resultsMeta: document.querySelector("#results-meta"),
@@ -63,11 +64,13 @@ document.addEventListener("click", (event) => {
     hideHelp();
   }
 });
+renderSelectedAuthor();
 
 function params() {
+  const researcherName = ids.researcherName.value.trim() || [ids.authorFirstName.value.trim(), ids.authorLastName.value.trim()].filter(Boolean).join(" ").toUpperCase();
   const query = new URLSearchParams({
     author_id: ids.authorId.value.trim(),
-    researcher_name: ids.researcherName.value.trim(),
+    researcher_name: researcherName,
     ssd: ids.ssd.value.trim(),
     start_year: ids.startYear.value.trim(),
     end_year: ids.endYear.value.trim(),
@@ -156,6 +159,10 @@ async function searchAuthor() {
   }
 
   setStatus("Ricerca autore in corso...");
+  state.selectedAuthor = null;
+  ids.authorId.value = "";
+  ids.researcherName.value = "";
+  renderSelectedAuthor();
   const base = defaultBackendUrl.replace(/\/$/, "");
   const query = new URLSearchParams({
     query: `authlast(${lastName}) and authfirst(${firstName})`,
@@ -173,7 +180,7 @@ async function searchAuthor() {
       throw new Error("Il backend non ha restituito una lista di autori.");
     }
     renderAuthorResults(data);
-    setStatus(`Trovati ${data.length} autori.`);
+    setStatus(data.length ? `Trovati ${data.length} profili. Seleziona quello corretto.` : "Nessun profilo trovato.");
   } catch (error) {
     console.error(error);
     ids.authorResults.className = "author-results empty";
@@ -281,7 +288,7 @@ function renderAuthorResults(rows) {
     .map((row) => {
       const subjects = (row.subject_areas || []).slice(0, 3).join(" | ");
       return `
-        <article class="author-card">
+        <article class="author-card${state.selectedAuthor && state.selectedAuthor.authorId === row.author_id ? " selected" : ""}">
           <strong>${escapeHtml(row.preferred_name || row.author_id)}</strong>
           <div class="author-meta">
             ID: ${escapeHtml(row.author_id || "")} ·
@@ -307,7 +314,13 @@ function renderAuthorResults(rows) {
       if (button.dataset.name) {
         ids.researcherName.value = button.dataset.name.toUpperCase();
       }
-      setStatus(`Autore selezionato: ${button.dataset.authorId}`);
+      state.selectedAuthor = {
+        authorId: button.dataset.authorId || "",
+        researcherName: (button.dataset.name || "").toUpperCase(),
+      };
+      renderSelectedAuthor();
+      renderAuthorResults(rows);
+      setStatus(`Autore selezionato: ${button.dataset.name || button.dataset.authorId}`);
     });
   });
 }
@@ -316,27 +329,41 @@ function fillExampleValues() {
   ids.authorFirstName.value = EXAMPLE_VALUES.authorFirstName;
   ids.authorLastName.value = EXAMPLE_VALUES.authorLastName;
   ids.authorId.value = EXAMPLE_VALUES.authorId;
-  ids.researcherName.value = EXAMPLE_VALUES.researcherName;
+  ids.researcherName.value = `${EXAMPLE_VALUES.authorFirstName} ${EXAMPLE_VALUES.authorLastName}`.toUpperCase();
   ids.ssd.value = EXAMPLE_VALUES.ssd;
   ids.startYear.value = EXAMPLE_VALUES.startYear;
   ids.endYear.value = EXAMPLE_VALUES.endYear;
+  state.selectedAuthor = {
+    authorId: EXAMPLE_VALUES.authorId,
+    researcherName: `${EXAMPLE_VALUES.authorFirstName} ${EXAMPLE_VALUES.authorLastName}`.toUpperCase(),
+  };
+  renderSelectedAuthor();
   setStatus("Esempio caricato. Puoi modificarlo liberamente.");
 }
 
 function validateGenerationFields() {
   if (!ids.authorId.value.trim()) {
-    return "Seleziona prima un autore oppure inserisci un Author ID Scopus valido.";
-  }
-  if (!ids.researcherName.value.trim()) {
-    return "Compila il campo 'Nome ricercatore'.";
-  }
-  if (!ids.ssd.value.trim()) {
-    return "Compila il campo 'SSD'.";
+    return "Cerca prima l'autore e seleziona il profilo corretto.";
   }
   if (!ids.startYear.value.trim() || !ids.endYear.value.trim()) {
     return "Compila anno iniziale e anno finale.";
   }
   return "";
+}
+
+function renderSelectedAuthor() {
+  if (!state.selectedAuthor || !state.selectedAuthor.authorId) {
+    ids.selectedAuthor.className = "selected-author empty";
+    ids.selectedAuthor.innerHTML = "<p>Nessun autore selezionato. Cerca nome e cognome, poi scegli il profilo corretto dai risultati.</p>";
+    return;
+  }
+
+  ids.selectedAuthor.className = "selected-author";
+  ids.selectedAuthor.innerHTML = `
+    <strong>Autore selezionato</strong>
+    <div>${escapeHtml(state.selectedAuthor.researcherName || "Profilo Scopus")}</div>
+    <div class="author-meta">Scopus Author ID: ${escapeHtml(state.selectedAuthor.authorId)}</div>
+  `;
 }
 
 function toggleHelp(button) {

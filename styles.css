@@ -230,6 +230,23 @@ button:disabled {
   color: var(--danger);
 }
 
+.selected-author {
+  margin-top: 16px;
+  padding: 14px 16px;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: #f6efe4;
+}
+
+.selected-author.empty {
+  color: var(--muted);
+}
+
+.selected-author strong {
+  display: block;
+  margin-bottom: 6px;
+}
+
 .help-popover {
   position: fixed;
   z-index: 20;
@@ -282,6 +299,10 @@ button:disabled {
 
 .author-card button {
   justify-self: start;
+}
+
+.author-card.selected {
+  background: rgba(31, 111, 95, 0.08);
 }
 
 .author-meta {

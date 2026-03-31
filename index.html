@@ -48,22 +48,8 @@
           </label>
           <label>
             <span class="field-label">
-              <span>Author ID Scopus *</span>
-              <button class="info-button" type="button" data-help="Dopo la ricerca autore, clicca su 'Usa Questo Autore'. Il sistema compila qui l'Author ID corretto.">i</button>
-            </span>
-            <input id="author-id" type="text" placeholder="Seleziona un autore dai risultati" />
-          </label>
-          <label>
-            <span class="field-label">
-              <span>Nome ricercatore *</span>
-              <button class="info-button" type="button" data-help="Nome che comparirà nella tabella finale. Puoi compilarlo a mano o farlo riempire dalla ricerca autore.">i</button>
-            </span>
-            <input id="researcher-name" type="text" placeholder="Esempio: EMANUELE BOSI" />
-          </label>
-          <label>
-            <span class="field-label">
-              <span>SSD *</span>
-              <button class="info-button" type="button" data-help="Inserisci il tuo settore scientifico-disciplinare, per esempio BIO/18.">i</button>
+              <span>SSD</span>
+              <button class="info-button" type="button" data-help="Campo opzionale. Se lo lasci vuoto, nella tabella finale resterà vuoto.">i</button>
             </span>
             <input id="ssd" type="text" placeholder="Esempio: BIO/18" />
           </label>
@@ -83,6 +69,10 @@
           </label>
         </div>
 
+        <div id="selected-author" class="selected-author empty">
+          <p>Nessun autore selezionato. Cerca nome e cognome, poi scegli il profilo corretto dai risultati.</p>
+        </div>
+
         <div class="actions">
           <button id="search-author">Cerca Autore</button>
           <button id="load-ips" class="primary">Genera Tabella IPS</button>
@@ -100,6 +90,8 @@
           <p>Nessuna ricerca autore eseguita.</p>
         </div>
         <div id="help-popover" class="help-popover" hidden></div>
+        <input id="author-id" type="hidden" />
+        <input id="researcher-name" type="hidden" />
       </section>
 
       <section class="panel">
